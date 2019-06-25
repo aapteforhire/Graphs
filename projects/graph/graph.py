@@ -76,20 +76,38 @@ class Graph:
         starting_vertex to destination_vertex in
         breath-first order.
         """
+        # visited = set()
+        # q = Queue()
+        # q.enqueue([starting_vertex]) # Adds it as a list
+        # while q.size() > 0:
+        #     path = q.dequeue() # First element is removed (FIFO)
+        #     v = path[-1]
+        #     if v == destination_vertex:
+        #         return path
+        #     if v not in visited:
+        #         visited.add(v)
+        #         for neighbor in self.vertices[v]:
+        #             path_copy = list(path) # Temporary list
+        #             path_copy.append(neighbor)
+        #             q.enqueue(path_copy) # Adds every neighbor of v to the back of the queue
+
+        # IN CLASS EXAMPLE
         visited = set()
         q = Queue()
         q.enqueue([starting_vertex]) # Adds it as a list
         while q.size() > 0:
             path = q.dequeue() # First element is removed (FIFO)
             v = path[-1]
-            if v == destination_vertex:
-                return path
             if v not in visited:
+                if v == destination_vertex:
+                    return path
                 visited.add(v)
-                for neighbor in self.vertices[v]:
-                    path_copy = list(path) # Temporary list
-                    path_copy.append(neighbor)
-                    q.enqueue(path_copy) # Adds every neighbor of v to the back of the queue
+            for neighbor in self.vertices[v]:
+                path_copy = list(path) # Temporary list
+                path_copy.append(neighbor)
+                q.enqueue(path_copy) # Adds every neighbor of v to the back of the queue
+
+        return None
 
     def dfs(self, starting_vertex, destination_vertex):
         """
@@ -113,8 +131,24 @@ class Graph:
                 for neighbor in self.vertices[v]:
                     s.push(neighbor) # Adds every neighbor of v to the back of the queue
 
-
-
+        # IN CLASS EXAMPLE
+        # visited = set()
+        # path = []
+        # s = Stack()
+        # s.push([starting_vertex])
+        # while s.size() > 0:
+        #     path = s.pop() # Last element is removed (LIFO)
+        #     v = path[-1]                  
+        #     if v not in visited:
+        #         if v == destination_vertex:
+        #             return path
+        #         visited.add(v)
+        #         path.append(v)
+        #         for neighbor in self.vertices[v]:
+        #             path_copy = list(path)
+        #             path_copy.append(neighbor)
+        #             s.push(neighbor) # Adds every neighbor of v to the back of the queue
+        # return None
 
 
 if __name__ == '__main__':
