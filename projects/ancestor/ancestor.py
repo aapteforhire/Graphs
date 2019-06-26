@@ -35,6 +35,10 @@ class Graph:
 
 
 def earliest_ancestor(ancestors, starting_node):
+    '''Write a function that, given the dataset 
+    and the ID of an individual in the dataset, 
+    returns their earliest known ancestor'''
+
     # Frame the problem as a graph
     graph = Graph()
     for pair in ancestors:
