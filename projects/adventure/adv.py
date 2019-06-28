@@ -22,28 +22,137 @@ world.printRooms()
 player = Player("Name", world.startingRoom)
 
 # Fill this out
-traversalPath = []
+# traversalPath = []
+
 graph = {}
 graph[player.currentRoom.id] = dict((direc, '?') for direc in player.currentRoom.getExits())
 directions = ['n', 's', 'w', 'e']
 oppo_dict = {'n':'s', 's':'n', 'w': 'e', 'e': 'w'}
+path = []
+rev_path = []
 
-print(graph)
+def get_neighbors(v):
+    return [(d,n) for d,n in graph[v].items()]
+
+# room_path = []
+visited = set()
+# back_steps = 1
+
+
+while len (visited) < len(roomGraph):
+# for i in range(20):
+    # print(f'\nMove: {len(path)+1}')
+    # print(f'Current Room: {player.currentRoom.id}')
+    # print(f'Updated Graph: {graph}')
+    # # print(f'Updated Graph: {graph[player.currentRoom.id]}')
+    # print(f'Available Exits: {player.currentRoom.getExits()}')
+    # # print(f'Room Path: {room_path}\n')
+    # print(f'Path: {path}')
+    # print(f'Reverse Path: {rev_path}\n')
+    # print(f'Visited length: {len(visited)}')
+    if '?' in graph[player.currentRoom.id].values():
+        # direction = random.choice(player.currentRoom.getExits())
+        direction = random.choice([move for move in player.currentRoom.getExits() 
+            if graph[player.currentRoom.id][move] == '?'])
+        # print(direction)
+        # if graph[player.currentRoom.id][direction] == '?':
+        temp_id= player.currentRoom.id
+        path.append(direction)
+        rev_path.append(oppo_dict[direction])
+        player.travel(direction)
+        if player.currentRoom not in visited:
+            # Graph of new room
+            graph[player.currentRoom.id] = dict((direc, '?') for direc in player.currentRoom.getExits())
+            visited.add(player.currentRoom)
+            graph[temp_id][direction] = player.currentRoom.id
+            graph[player.currentRoom.id][oppo_dict[direction]] = temp_id # Opposite direction 
+    elif '?' not in graph[player.currentRoom.id].values():
+        temp_path = []
+        while '?' not in graph[player.currentRoom.id].values():
+            if len(rev_path) > 1:
+                rev_direction = rev_path.pop()
+            else:
+                rev_direction = oppo_dict[path[-1]]
+            temp_path.append(rev_direction)
+            player.travel(rev_direction)
+            # back_steps +=1
+            if '?' in graph[player.currentRoom.id].values():
+                path.extend(temp_path)
+                break
+    # else:
+    #     backtrack = set()
+    #     backtrack.add(player.currentRoom.id)
+    #     while '?' not in graph[player.currentRoom.id].values():
+            # temp_list = get_neighbors(player.currentRoom.id)
+        # DEAD-END - BFS
+           
+
+
+
+            # q = Queue()
+            # q.enqueue([player.currentRoom.id])
+            # while q.size() > 0:
+            #     path = q.dequeue()
+            #     v = path[-1]
+            #     if '?' in graph[v].values():
+            #         return path
+            #     if v not in backtrack:
+            #         if graph[v]
+            #         backtrack.add(v)
+            #     for neighbor in get_neighbors(v):
+            #         # path_copy = list(path)
+            #         # path_copy.append(neighbor)
+            #         # q.enqueue(path_copy)
+
+
+        # visited = set()
+        # q = Queue()
+        # q.enqueue([starting_vertex]) # Adds it as a list
+        # while q.size() > 0:
+        #     path = q.dequeue() # First element is removed (FIFO)
+        #     v = path[-1]
+        #     if v == destination_vertex:
+        #         return path
+        #     if v not in visited:
+        #         visited.add(v)
+        #         for neighbor in self.vertices[v]:
+        #             path_copy = list(path) # Temporary list
+        #             path_copy.append(neighbor)
+        #             q.enqueue(path_copy) # Adds every neighbor of v to the back of the queue
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # TRAVERSAL TEST
-# visited_rooms = set()
-# player.currentRoom = world.startingRoom
-# visited_rooms.add(player.currentRoom)
+traversalPath = path
+visited_rooms = set()
+player.currentRoom = world.startingRoom
+visited_rooms.add(player.currentRoom)
 
-# for move in traversalPath:
-#     player.travel(move)
-#     visited_rooms.add(player.currentRoom)
+for move in traversalPath:
+    player.travel(move)
+    visited_rooms.add(player.currentRoom)
 
-# if len(visited_rooms) == len(roomGraph):
-#     print(f"TESTS PASSED: {len(traversalPath)} moves, {len(visited_rooms)} rooms visited")
-# else:
-#     print("TESTS FAILED: INCOMPLETE TRAVERSAL")
-#     print(f"{len(roomGraph) - len(visited_rooms)} unvisited rooms")
+if len(visited_rooms) == len(roomGraph):
+    print(f"TESTS PASSED: {len(traversalPath)} moves, {len(visited_rooms)} rooms visited")
+else:
+    print("TESTS FAILED: INCOMPLETE TRAVERSAL")
+    print(f"{len(roomGraph) - len(visited_rooms)} unvisited rooms")
 
 
 
