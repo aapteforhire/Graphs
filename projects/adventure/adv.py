@@ -24,19 +24,20 @@ player = Player("Name", world.startingRoom)
 # Fill this out
 # traversalPath = []
 
+# Initiate - Room 0
 graph = {}
 graph[player.currentRoom.id] = dict((direc, '?') for direc in player.currentRoom.getExits())
 directions = ['n', 's', 'w', 'e']
-oppo_dict = {'n':'s', 's':'n', 'w': 'e', 'e': 'w'}
+oppo_dict = {'n':'s', 's':'n', 'w': 'e', 'e': 'w'} # Creates Reverse Path
 path = []
-rev_path = []
+# rev_path = [] # The opposite of path
 
-def get_neighbors(v):
-    return [(d,n) for d,n in graph[v].items()]
+# def get_neighbors(v):
+#     return [(d,n) for d,n in graph[v].items()]
 
-# room_path = []
 visited = set()
-# back_steps = 1
+dead_end = set()
+
 
 
 while len (visited) < len(roomGraph):
@@ -48,37 +49,46 @@ while len (visited) < len(roomGraph):
     # print(f'Available Exits: {player.currentRoom.getExits()}')
     # # print(f'Room Path: {room_path}\n')
     # print(f'Path: {path}')
-    # print(f'Reverse Path: {rev_path}\n')
+    # # print(f'Reverse Path: {rev_path}\n')
     # print(f'Visited length: {len(visited)}')
     if '?' in graph[player.currentRoom.id].values():
-        # direction = random.choice(player.currentRoom.getExits())
-        direction = random.choice([move for move in player.currentRoom.getExits() 
-            if graph[player.currentRoom.id][move] == '?'])
+        direction = random.choice([move for move in player.currentRoom.getExits() if graph[player.currentRoom.id][move] == '?'])
         # print(direction)
-        # if graph[player.currentRoom.id][direction] == '?':
-        temp_id= player.currentRoom.id
-        path.append(direction)
-        rev_path.append(oppo_dict[direction])
-        player.travel(direction)
-        if player.currentRoom not in visited:
-            # Graph of new room
-            graph[player.currentRoom.id] = dict((direc, '?') for direc in player.currentRoom.getExits())
-            visited.add(player.currentRoom)
-            graph[temp_id][direction] = player.currentRoom.id
-            graph[player.currentRoom.id][oppo_dict[direction]] = temp_id # Opposite direction 
-    elif '?' not in graph[player.currentRoom.id].values():
-        temp_path = []
-        while '?' not in graph[player.currentRoom.id].values():
-            if len(rev_path) > 1:
-                rev_direction = rev_path.pop()
-            else:
-                rev_direction = oppo_dict[path[-1]]
-            temp_path.append(rev_direction)
+        if graph[player.currentRoom.id][direction] not in dead_end:
+            temp_id = player.currentRoom.id
+            path.append(direction)
+            # rev_path.append(oppo_dict[direction])
+            player.travel(direction)
+            if player.currentRoom not in visited:
+                # Graph of new room
+                graph[player.currentRoom.id] = dict((direc, '?') for direc in player.currentRoom.getExits())
+                visited.add(player.currentRoom)
+                graph[temp_id][direction] = player.currentRoom.id
+                graph[player.currentRoom.id][oppo_dict[direction]] = temp_id # Opposite direction 
+        else:
+            break
+    
+    elif '?' not in graph[player.currentRoom.id].values(): # and len(graph[player.currentRoom.id]) == 1:
+        rev_path = [oppo_dict[move] for move in path[::-1]]
+        dead_end.add(player.currentRoom.id)
+        temp = []
+        for rev_direction in rev_path:
             player.travel(rev_direction)
-            # back_steps +=1
+            temp.append(rev_direction)
             if '?' in graph[player.currentRoom.id].values():
-                path.extend(temp_path)
+                path.extend(temp)
                 break
+        # break
+
+        # while '?' not in graph[player.currentRoom.id].values():
+        #     if len(rev_path) > 1:
+        #         rev_direction = rev_path.pop()
+        #     else:
+        #         rev_direction = oppo_dict[path[-1]]
+        #     temp_path.append(rev_direction)
+        #     player.travel(rev_direction)
+        #     # back_steps +=1
+        #     
     # else:
     #     backtrack = set()
     #     backtrack.add(player.currentRoom.id)
@@ -153,6 +163,8 @@ if len(visited_rooms) == len(roomGraph):
 else:
     print("TESTS FAILED: INCOMPLETE TRAVERSAL")
     print(f"{len(roomGraph) - len(visited_rooms)} unvisited rooms")
+
+print(f'\n{traversalPath}')
 
 
 
